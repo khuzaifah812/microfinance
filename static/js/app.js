@@ -138,6 +138,18 @@
     $('#idle-out').addEventListener('click', function () { $('#logout-form').submit(); });
   }
 
+  /* ---- phone tables: copy each column heading onto its cells so the CSS can show them as cards ---- */
+  $$('table.tbl:not(.stack)').forEach(function (tb) {     /* short tables become cards; wide ones with totals keep scrolling */
+    var cols = $$('thead th', tb).length;
+    if (cols >= 2 && cols <= 5 && !tb.querySelector('tr.sum, tr.grp')) tb.classList.add('stack');
+  });
+  $$('table.stack').forEach(function (tb) {
+    var heads = $$('thead th', tb).map(function (h) { return h.textContent.trim(); });
+    $$('tbody tr', tb).forEach(function (r) {
+      $$('td', r).forEach(function (td, i) { if (!td.classList.contains('empty') && heads[i]) td.setAttribute('data-label', heads[i]); });
+    });
+  });
+
   /* ---- searchable, paginated (20/page) client tables ---- */
   $$('table.js-table').forEach(function (tb) {
     var rows = $$('tbody tr', tb).filter(function (r) { return !r.classList.contains('keep') && !r.querySelector('td.empty'); });
