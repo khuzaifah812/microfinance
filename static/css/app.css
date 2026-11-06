@@ -1,7 +1,7 @@
 /* SFMS design system - colours are RGB channels so alpha variants are possible: rgb(var(--pr) / .12) */
 :root {
   /* Palette taken from the Omukazi W'omutima Umoja SACCO logo: purple, orange, green */
-  --bg: 56 136 64; --sf: 255 255 255; --tx: 31 22 40; --mu: 107 98 117; --ln: 224 218 232;
+  --bg: 247 245 250; --sf: 255 255 255; --tx: 31 22 40; --mu: 107 98 117; --ln: 224 218 232;
   --pr: 84 28 120; --ac: 214 112 22; --bad: 180 35 24; --ok: 46 125 56; --warn: 214 112 22;
   --green: 56 136 64; --purple: 84 28 120; --orange: 232 140 56;
   --side: 62 20 92; --on-pr: 255 255 255; --hover: 241 236 246;
