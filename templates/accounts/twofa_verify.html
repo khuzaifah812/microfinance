@@ -1,0 +1,8 @@
+{% extends "base_bare.html" %}{% block title %}Verify{% endblock %}
+{% block content %}
+<h1>Two-factor verification</h1><p class="mute">Enter the 6-digit code from your authenticator app.</p>
+<form method="post" novalidate>{% csrf_token %}<div class="field"><label>6-digit code</label>{{ form.token }}</div>
+<div class="formactions"><button class="btn" type="submit">Verify</button></div></form>
+<form method="post" action="{% url 'accounts:logout' %}" style="margin-top:14px">{% csrf_token %}<button class="btn ghost sm" type="submit">Cancel and sign out</button></form>
+<p class="small mute" style="margin-top:14px">Lost your phone? Ask the system administrator to reset your authenticator.</p>
+{% endblock %}

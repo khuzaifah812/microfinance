@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}{{ m.name }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ m.name }}</h1><p>{{ m.description }}</p></div></div>
+<div class="card"><p>This extension module is active (version {{ m.version }}). It has no screens of its own yet; its developer adds them as Django views and templates and links them from here.</p></div>{% endblock %}

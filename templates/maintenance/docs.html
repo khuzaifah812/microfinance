@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}System documents{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>System documents</h1><p>Administrator notes, runbooks and module documentation.</p></div><div class="actions np"><a class="btn" href="{% url 'maintenance:doc_new' %}">New document</a></div></div>
+<div class="card"><ul>{% for d in pages %}<li><a href="{% url 'maintenance:doc' d.pk %}">{{ d.title }}</a> <span class="small mute">updated {{ d.updated_at|date:"d M Y" }}</span></li>{% empty %}<li class="mute">No documents yet.</li>{% endfor %}</ul></div>{% endblock %}

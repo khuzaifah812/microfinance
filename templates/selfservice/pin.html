@@ -1,0 +1,3 @@
+{% extends "base_bare.html" %}{% block content %}
+<h1>Choose your own PIN</h1><p class="mute">Hello {{ member.full_name }}. Replace the one-time PIN with one only you know.</p>
+<form method="post" novalidate>{% csrf_token %}{% render_form form %}<div class="formactions"><button class="btn" type="submit">Save PIN</button></div></form>{% endblock %}

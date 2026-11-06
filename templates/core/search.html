@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block title %}Search{% endblock %}
+{% block content %}<div class="pagehead"><div><h1>Search</h1><p>{% if q %}Results for "{{ q }}"{% else %}Type at least two characters in the search box.{% endif %}</p></div></div>
+<div class="card">{% for kind, text, url in results %}<p><span class="badge mute">{{ kind }}</span> <a href="{{ url }}">{{ text }}</a></p>{% empty %}<p class="mute">{% if q %}No matches you are allowed to see.{% else %}Nothing searched yet.{% endif %}</p>{% endfor %}</div>{% endblock %}

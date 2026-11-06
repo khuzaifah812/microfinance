@@ -1,0 +1,9 @@
+{% extends "base_bare.html" %}{% block title %}Set up two-factor{% endblock %}
+{% block content %}
+<h1>Set up two-factor sign-in</h1>
+<p class="mute">Your role requires a 6-digit code from an authenticator app (Google Authenticator, Microsoft Authenticator, Authy).</p>
+<ol class="small" style="font-family:Inter;padding-left:18px"><li>Open the app and choose <b>Scan a QR code</b>.</li><li>Scan the code below (or enter the key manually).</li><li>Type the 6-digit code the app shows.</li></ol>
+<div style="text-align:center;margin:12px 0"><div class="qr">{{ qr }}</div><p class="small mute">Manual key: <code class="secret">{{ secret }}</code></p></div>
+<form method="post" novalidate>{% csrf_token %}<div class="field"><label>6-digit code</label>{{ form.token }}</div>
+<div class="formactions"><button class="btn" type="submit">Verify and activate</button></div></form>
+{% endblock %}

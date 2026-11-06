@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}{{ j.ref }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Journal {{ j.ref }}</h1><p>{{ j.date|date:"d M Y" }} &middot; {{ j.description }} &middot; source: {{ j.source }} {{ j.source_ref }}</p></div>
+<div class="actions np"><button class="btn ghost" data-print type="button">{% icon 'print' %} Print</button><a class="btn ghost" href="{% url 'accounting:journals' %}">All journals</a></div></div>
+{% if j.reverses %}<div class="note">This entry reverses <a href="{% url 'accounting:journal' j.reverses_id %}">{{ j.reverses.ref }}</a>.</div>{% endif %}
+{% for r in reversals %}<div class="note">Reversed by <a href="{% url 'accounting:journal' r.pk %}">{{ r.ref }}</a>.</div>{% endfor %}
+<div class="tablewrap"><table class="tbl"><thead><tr><th>Account</th><th>Memo</th><th class="num">Debit</th><th class="num">Credit</th></tr></thead><tbody>
+{% for l in lines %}<tr><td>{{ l.account.code }} {{ l.account.name }}</td><td>{{ l.memo }}</td><td class="num">{% if l.debit %}{{ l.debit|num }}{% endif %}</td><td class="num">{% if l.credit %}{{ l.credit|num }}{% endif %}</td></tr>{% endfor %}</tbody>
+<tfoot><tr class="sum"><td colspan="2">Totals {% if total_dr == total_cr %}(balanced){% endif %}</td><td class="num">{{ total_dr|num }}</td><td class="num">{{ total_cr|num }}</td></tr></tfoot></table></div>
+<p class="small mute">Posted by {{ j.posted_by.get_full_name|default:j.posted_by.username }} on {{ j.posted_at|date:"d M Y H:i" }}. Posted journals cannot be edited or deleted.</p>
+{% if reversible and not reversals %}<div class="card np" style="max-width:520px"><h2>Reverse this entry</h2><form method="post" action="{% url 'accounting:journal_reverse' j.pk %}" data-once>{% csrf_token %}<div class="field"><label>Reason</label><input class="inp" name="reason" required maxlength="200"></div><div class="formactions"><button class="btn" type="submit" data-confirm="Submit a reversal for approval?">Request reversal</button></div></form></div>{% endif %}{% endblock %}

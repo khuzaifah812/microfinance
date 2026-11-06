@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}Maintenance Centre{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>System Maintenance &amp; Extension Centre</h1><p>Manage modules, monitor system health, take backups and announce planned maintenance.</p></div></div>
+<div class="grid">
+<a class="kpi linkcard" href="{% url 'maintenance:health' %}" {% if bad %}style="border-left-color:rgb(var(--bad))"{% endif %}><span class="k">System health</span><b>{% if bad %}{{ bad }} problem{{ bad|pluralize }}{% elif warn %}{{ warn }} warning{{ warn|pluralize }}{% else %}All checks passed{% endif %}</b><span class="sub">{{ ok }} OK</span></a>
+<a class="kpi linkcard" href="{% url 'maintenance:modules' %}"><span class="k">Modules</span><b>{{ enabled }} of {{ modules }} active</b></a>
+<a class="kpi linkcard" href="{% url 'maintenance:backups' %}"><span class="k">Last backup</span><b>{% if last_backup %}{{ last_backup.created_at|date:"d M H:i" }}{% else %}None yet{% endif %}</b></a>
+<a class="kpi linkcard" href="{% url 'maintenance:failures' %}"><span class="k">Open failed operations</span><b>{{ open_failures }}</b></a></div>
+<div class="grid two"><div class="card"><h2>Shortcuts</h2><p><a class="btn ghost" href="{% url 'maintenance:modules' %}">Modules</a> <a class="btn ghost" href="{% url 'maintenance:notices' %}">Maintenance notices</a> <a class="btn ghost" href="{% url 'maintenance:docs' %}">System documents</a> <a class="btn ghost" href="{% url 'maintenance:activity' %}">Activity log</a> <a class="btn ghost" href="{% url 'maintenance:demo_reset' %}">Demo reset</a></p>
+<p class="small mute">Python {{ info.python }} &middot; Django {{ info.django }} &middot; database {{ info.db }}</p></div>
+<div class="card"><h2>Upcoming notices</h2>{% for n in notices %}<p class="small"><b>{{ n.title }}</b> - {{ n.starts_at|date:"d M H:i" }} to {{ n.ends_at|date:"d M H:i" }}</p>{% empty %}<p class="mute small">No planned maintenance.</p>{% endfor %}</div></div>
+<div class="card"><h2>Recent maintenance activity</h2><ul class="timeline">{% for a in logs %}<li><b>{{ a.action }}</b> {{ a.reference }} by {{ a.username|default:"system" }}<small>{{ a.ts|date:"d M H:i" }}</small></li>{% empty %}<li>No activity yet.</li>{% endfor %}</ul></div>{% endblock %}

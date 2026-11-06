@@ -1,0 +1,4 @@
+{% extends "base_bare.html" %}{% block content %}
+<h1>Member sign in</h1><p class="mute">Use your member number and the 6-digit PIN given to you by the SACCO.</p>
+<form method="post" novalidate>{% csrf_token %}{% render_form form %}<div class="formactions"><button class="btn" style="width:100%;justify-content:center" type="submit">Sign in</button></div></form>
+<p class="small mute" style="margin-top:16px">Forgot your PIN? Visit the SACCO office to receive a new one. Staff sign in <a href="{% url 'accounts:login' %}">here</a>.</p>{% endblock %}

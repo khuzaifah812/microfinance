@@ -1,0 +1,4 @@
+<div class="tablewrap"><table class="tbl {% if js %}js-table{% endif %}">
+<thead><tr>{% for c in table.columns %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+<tbody>{% for row in table.rows %}<tr>{% for c in row %}<td{% if c.num %} class="num"{% endif %}>{% if c.cls == "post" %}<form method="post" action="{{ c.href }}" class="inline">{% csrf_token %}<button class="btn ghost sm" type="submit">{{ c.text }}</button></form>{% elif c.href %}<a href="{{ c.href }}">{% if c.badge %}<span class="badge {{ c.badge }}">{{ c.text }}</span>{% else %}{{ c.text }}{% endif %}</a>{% elif c.badge %}<span class="badge {{ c.badge }}">{{ c.text }}</span>{% else %}{{ c.text }}{% endif %}</td>{% endfor %}</tr>
+{% empty %}<tr><td class="empty" colspan="{{ table.columns|length }}">{{ table.empty }}</td></tr>{% endfor %}</tbody></table></div>

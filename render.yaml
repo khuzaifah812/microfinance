@@ -1,0 +1,57 @@
+# Render Blueprint. Create via: New > Blueprint > pick this repository.
+services:
+  - type: web
+    name: sacco-sfms
+    runtime: docker
+    plan: starter              # a paid plan is needed for a persistent disk
+    healthCheckPath: /healthz
+    autoDeploy: true
+    disk:
+      name: sacco-data
+      mountPath: /var/data     # uploaded KYC documents and backups live here
+      sizeGB: 5
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false            # e.g. sacco-sfms.onrender.com
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        sync: false            # e.g. https://sacco-sfms.onrender.com
+      - key: DJANGO_BEHIND_PROXY
+        value: "True"
+      - key: DJANGO_SECURE_SSL
+        value: "True"
+      - key: PRODUCTION_MODE
+        value: "True"
+      - key: DB_ENGINE
+        value: mysql
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_CONN_MAX_AGE
+        value: "0"
+      - key: MEDIA_ROOT
+        value: /var/data/media
+      - key: BACKUP_DIR
+        value: /var/data/backups
+      - key: BACKUP_ENCRYPTION_KEY
+        sync: false
+      - key: AUDIT_HMAC_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "2"
+      - key: BOOTSTRAP_ADMIN_USERNAME
+        value: admin
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false

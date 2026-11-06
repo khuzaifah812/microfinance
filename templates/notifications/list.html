@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Notifications</h1></div><div class="actions np"><form method="post" action="{% url 'notifications:read_all' %}">{% csrf_token %}<button class="btn ghost" type="submit">Mark all read</button></form></div></div>
+<div class="card"><ul class="timeline">{% for n in page %}<li class="{% if n.level == 'bad' %}bad{% endif %}"><a href="{% url 'notifications:open' n.pk %}"><b>{{ n.title }}</b>{% if not n.read_at %} <span class="badge warn">New</span>{% endif %}</a><small>{{ n.created_at|date:"d M Y H:i" }}</small>{% if n.message %}<div>{{ n.message }}</div>{% endif %}</li>{% empty %}<li>You have no notifications.</li>{% endfor %}</ul></div>
+{% include "_pager.html" %}{% endblock %}

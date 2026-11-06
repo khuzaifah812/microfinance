@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Manual journal{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Manual journal</h1><p>Debits must equal credits. Manual journals always go to a second approver.</p></div></div>
+<form method="post" data-once class="card">{% csrf_token %}
+<div class="fgrid"><div class="field"><label>Date</label><input class="inp" type="date" name="date" value="{{ today|date:'Y-m-d' }}"></div><div class="field grow"><label>Description</label><input class="inp" name="description" required maxlength="250" value="{{ desc }}"></div></div>
+<div class="tablewrap"><table class="tbl" id="jrows"><thead><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th><th>Memo</th></tr></thead><tbody>
+{% for r in rows %}<tr data-jrow><td><select class="inp" name="code"><option value="">Select account</option>{% for a in accounts %}<option value="{{ a.code }}" {% if r.code == a.code %}selected{% endif %}>{{ a.code }} {{ a.name }}</option>{% endfor %}</select></td><td><input class="inp num" type="number" min="0" step="1" name="debit" value="{{ r.debit|default:'' }}"></td><td><input class="inp num" type="number" min="0" step="1" name="credit" value="{{ r.credit|default:'' }}"></td><td><input class="inp" name="memo" maxlength="200" value="{{ r.memo|default:'' }}"></td></tr>{% endfor %}</tbody>
+<tfoot><tr class="sum"><td>Totals</td><td class="num" id="jdr">0</td><td class="num" id="jcr">0</td><td><span id="jstat" class="badge">-</span></td></tr></tfoot></table></div>
+<div class="formactions"><button class="btn ghost" type="button" id="jadd">Add line</button><button class="btn" type="submit">Submit journal</button><a class="btn ghost" href="{% url 'accounting:journals' %}">Cancel</a></div></form>{% endblock %}

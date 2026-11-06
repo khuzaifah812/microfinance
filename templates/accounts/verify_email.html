@@ -1,0 +1,21 @@
+{% extends "base_bare.html" %}{% block title %}Verify your email{% endblock %}
+{% block content %}
+{% if has_email %}
+<h1>Check your email</h1>
+<p class="mute">We sent a 6-digit code to <b>{{ masked }}</b>. It expires in {{ minutes }} minutes.</p>
+{% if error %}<div class="note bad">{{ error }}</div>{% endif %}
+<form method="post" novalidate>{% csrf_token %}<input type="hidden" name="action" value="verify">
+<div class="field"><label for="code">Verification code</label><input class="inp codebox" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" autofocus required></div>
+<div class="formactions"><button class="btn" type="submit">Verify and continue</button></div></form>
+<form method="post" style="margin-top:12px">{% csrf_token %}<input type="hidden" name="action" value="resend"><button class="btn ghost sm" type="submit">Send a new code</button></form>
+<p class="small mute" style="margin-top:14px">Not your address? Ask the administrator to correct it in your staff profile.</p>
+{% else %}
+<h1>Add your email address</h1>
+<p class="mute">Your account has no email on file. Enter the address that belongs to you; we will send a 6-digit code to confirm it.</p>
+{% if error %}<div class="note bad">{{ error }}</div>{% endif %}
+<form method="post" novalidate>{% csrf_token %}<input type="hidden" name="action" value="set_email">
+<div class="field"><label for="email">Email address</label><input class="inp" id="email" name="email" type="email" autocomplete="email" required autofocus></div>
+<div class="formactions"><button class="btn" type="submit">Send code</button></div></form>
+{% endif %}
+<form method="post" action="{% url 'accounts:logout' %}" style="margin-top:14px">{% csrf_token %}<button class="btn ghost sm" type="submit">Cancel and sign out</button></form>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Approval limits{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Approval limits</h1><p>Transactions above the limit are held in the queue until a second user approves. A limit of 0 sends every item for approval.</p></div></div>
+<form method="post" class="card" style="max-width:760px">{% csrf_token %}
+<table class="tbl"><thead><tr><th>Transaction</th><th class="num">Required above (UGX)</th><th>Enabled</th></tr></thead><tbody>
+{% for r, f in items %}<tr><td>{{ r.get_kind_display }}</td>{% if f %}<td class="num">{{ f.threshold }}</td><td>{{ f.enabled }}</td>{% else %}<td class="num">{{ r.threshold|num }}</td><td>{{ r.enabled|yesno:"Yes,No" }}</td>{% endif %}</tr>{% endfor %}</tbody></table>
+{% if can_edit %}<div class="formactions"><button class="btn" type="submit">Save limits</button></div>{% endif %}</form>{% endblock %}

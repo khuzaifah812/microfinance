@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Loan application{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{% if refi %}Top-up / refinance {{ refi.loan_no }}{% else %}New loan application{% endif %}</h1><p>Terms are frozen on the loan at application time.</p></div></div>
+{% if refi %}<div class="note">The new loan will first settle {{ refi.loan_no }} (outstanding principal UGX {{ refi.outstanding_principal|num }}). Only the net amount is paid out.</div>{% endif %}
+<div class="card" style="max-width:900px"><form method="post" data-once novalidate>{% csrf_token %}{% render_form form %}<span data-loan-preview hidden></span>
+<div class="formactions"><button class="btn" type="submit">Capture application</button><a class="btn ghost" href="{% url 'loans:list' %}">Cancel</a></div></form></div>
+<h2>Repayment preview</h2><div id="preview-out"><p class="mute">Choose a product, amount and period to preview the schedule.</p></div>{% endblock %}

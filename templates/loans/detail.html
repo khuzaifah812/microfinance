@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% block title %}{{ loan.loan_no }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ loan.loan_no }}</h1><p><a href="{% url 'members:detail' loan.member_id %}">{{ loan.member.full_name }}</a> &middot; {{ loan.product.name }} &middot; <span class="badge {{ loan.get_status_display|badge }}">{{ loan.get_status_display }}</span></p></div>
+<div class="actions np">
+{% if can_repay %}<a class="btn" href="{% url 'loans:repay' loan.pk %}">Repay</a>{% endif %}
+{% if can_disburse %}<a class="btn" href="{% url 'loans:disburse' loan.pk %}">Disburse</a>{% endif %}
+{% if can_settle %}<a class="btn ghost" href="{% url 'loans:settle' loan.pk %}">Early settlement</a>{% endif %}
+{% if can_reschedule %}<a class="btn ghost" href="{% url 'loans:reschedule' loan.pk %}">Reschedule</a>{% endif %}
+{% if can_topup %}<a class="btn ghost" href="{% url 'loans:apply' %}?topup={{ loan.pk }}">Top-up</a>{% endif %}
+<a class="btn ghost" href="{% url 'loans:statement' loan.pk %}">Statement</a>{% if loan.status == "cleared" %}<a class="btn ghost" href="{% url 'loans:certificate' loan.pk %}">Clearance certificate</a>{% endif %}</div></div>
+<div class="steps">{% for s, l in loan.STATUS %}{% if s != "rejected" %}<span class="{% if s == loan.status %}now{% endif %}">{{ l }}</span>{% endif %}{% endfor %}{% if loan.status == "rejected" %}<span class="now" style="background:rgb(var(--bad))">Rejected</span>{% endif %}</div>
+<div class="grid">
+<div class="kpi"><span class="k">Principal</span><b>{{ loan.principal|ugx }}</b></div>
+<div class="kpi"><span class="k">Terms (frozen)</span><b>{{ loan.interest_rate }}%</b><span class="sub">{{ loan.get_interest_method_display }} &middot; {{ loan.term }} {{ loan.frequency }}</span></div>
+{% if loan.disbursed_on %}<div class="kpi"><span class="k">Total payable</span><b>{{ loan.total_payable|ugx }}</b><span class="sub">interest {{ loan.total_interest|ugx }}</span></div>
+<div class="kpi"><span class="k">Outstanding principal</span><b>{{ loan.outstanding_principal|ugx }}</b></div>
+{% if loan.status == "active" %}<div class="kpi" style="border-left-color:rgb(var(--bad))"><span class="k">Overdue</span><b>{{ overdue|ugx }}</b><span class="sub">{% if days_overdue %}{{ days_overdue }} days{% else %}none{% endif %}{% if pen_unpaid %} &middot; penalties {{ pen_unpaid|ugx }}{% endif %}</span></div>{% endif %}{% endif %}
+</div>
+{% if loan.status in "pending_officer pending_committee pending_manager" %}
+<div class="grid two">
+<div class="card"><h2>Decision - {{ stage_label }}</h2>
+{% if can_decide %}<form method="post" action="{% url 'loans:decide' loan.pk %}" data-once data-confirm="You are about to record: {decision}. Your decision is logged against your name and cannot be changed afterwards." data-confirm-title="Record your decision?" data-confirm-type="warning" data-confirm-ok="Record decision">{% csrf_token %}{% render_form decision_form %}<div class="formactions"><button class="btn" type="submit">Record decision</button></div></form>
+{% elif decide_blocked_self %}<div class="note bad">You cannot decide on this application: you captured it or already acted on it. A different person must take this step (maker-checker).</div>
+{% else %}<p class="mute">Waiting for: <b>{{ stage_label }}</b>. Your role cannot act at this stage.</p>{% endif %}</div>
+<div class="card"><h2>Guarantors ({{ guarantors|length }} of {{ loan.product.guarantors_required }} required)</h2>
+{% for g in guarantors %}<p class="small"><b>{{ g.guarantor.full_name }}</b> pledges UGX {{ g.amount|num }} from {{ g.account.account_no }} <span class="badge {{ g.get_status_display|badge }}">{{ g.get_status_display }}</span></p>{% empty %}<p class="mute small">No guarantors yet.</p>{% endfor %}
+{% if can_guarantor %}<form method="post" action="{% url 'loans:guarantor' loan.pk %}" data-once>{% csrf_token %}{% render_form gform %}<div class="formactions"><button class="btn ghost" type="submit">Reserve pledge</button></div></form>{% endif %}</div></div>
+{% elif guarantors %}<div class="card"><h2>Guarantors</h2>{% for g in guarantors %}<p class="small"><b>{{ g.guarantor.full_name }}</b> - UGX {{ g.amount|num }} from {{ g.account.account_no }} <span class="badge {{ g.get_status_display|badge }}">{{ g.get_status_display }}</span></p>{% endfor %}</div>{% endif %}
+{% if insts %}<div class="card"><h2>Repayment schedule</h2><div class="tablewrap"><table class="tbl"><thead><tr><th>#</th><th>Due</th><th class="num">Principal</th><th class="num">Interest</th><th class="num">Instalment</th><th class="num">Paid</th><th class="num">Balance</th><th class="num">Penalty</th><th>Status</th></tr></thead><tbody>
+{% for i in insts %}<tr {% if i.status == "superseded" %}style="opacity:.5"{% endif %}><td>{{ i.no }}</td><td>{{ i.due_date|date:"d M Y" }}</td><td class="num">{{ i.principal|num }}</td><td class="num">{{ i.interest|num }}</td><td class="num">{{ i.total|num }}</td><td class="num">{{ i.principal_paid|add:i.interest_paid|num }}</td><td class="num">{{ i.balance|num }}</td><td class="num">{{ i.penalty_balance|num }}</td><td><span class="badge {{ i.get_status_display|badge }}">{{ i.get_status_display }}</span></td></tr>{% endfor %}</tbody>
+<tfoot><tr class="sum"><td colspan="2">Total (current schedule)</td><td class="num">{{ loan.principal|num }}</td><td class="num">{{ loan.total_interest|num }}</td><td class="num">{{ loan.total_payable|num }}</td><td colspan="4"></td></tr></tfoot></table></div></div>{% endif %}
+<div class="grid two">
+<div class="card"><h2>Approval history</h2><ul class="timeline">{% for a in approvals %}<li class="{% if a.decision == 'reject' %}bad{% endif %}"><b>{{ a.get_stage_display }}: {{ a.get_decision_display }}</b> by {{ a.user.get_full_name|default:a.user.username }}<small>{{ a.ts|date:"d M Y H:i" }}</small>{% if a.comment %}<div>{{ a.comment }}</div>{% endif %}</li>{% empty %}<li>Applied by {{ loan.applied_by.username }} on {{ loan.applied_on|date:"d M Y" }}. No decisions yet.</li>{% endfor %}</ul></div>
+<div class="card"><h2>Repayments</h2><div class="tablewrap"><table class="tbl"><thead><tr><th>Date</th><th>Ref</th><th class="num">Amount</th><th class="num">Principal</th><th class="num">Interest</th><th class="num">Penalty</th></tr></thead><tbody>{% for r in repayments %}<tr {% if r.is_reversed %}style="text-decoration:line-through;opacity:.6"{% endif %}><td>{{ r.date|date:"d M Y" }}</td><td>{{ r.ref }}</td><td class="num">{{ r.amount|num }}</td><td class="num">{{ r.principal|num }}</td><td class="num">{{ r.interest|num }}</td><td class="num">{{ r.penalty|num }}</td></tr>{% empty %}<tr><td colspan="6" class="empty">No repayments yet.</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% endblock %}

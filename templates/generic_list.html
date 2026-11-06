@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ title }}</h1>{% if subtitle %}<p>{{ subtitle }}</p>{% endif %}</div>
+  <div class="actions np">{% for label, url, style in actions %}{% if style == "post" %}<form method="post" action="{{ url }}" class="inline">{% csrf_token %}<button class="btn" type="submit" data-confirm="Run this action now?">{{ label }}</button></form>{% else %}<a class="btn {% if style == 'ghost' %}ghost{% endif %}" href="{{ url }}">{{ label }}</a>{% endif %}{% endfor %}</div></div>
+{% if search or filters %}
+<form class="toolbar np" method="get" {% if filters %}data-autosubmit{% endif %}>
+  {% if search %}<div class="field grow"><label for="q">Search</label><input class="inp" id="q" type="search" name="q" value="{{ q }}" placeholder="{{ search }}"></div>{% endif %}
+  {% for name, label, opts, cur in filters %}<div class="field"><label>{{ label }}</label><select class="inp" name="{{ name }}">{% for v, l in opts %}<option value="{{ v }}" {% if v == cur %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>{% endfor %}
+  <button class="btn ghost" type="submit">{% icon 'search' %} Apply</button>
+</form>{% endif %}
+{% if page %}{% include "_table.html" %}{% else %}{% include "_table.html" with js=True %}{% endif %}
+{% include "_pager.html" %}
+{% if table2 %}<h2 style="margin-top:22px">{{ table2_title }}</h2>{% include "_table.html" with table=table2 js=True %}{% endif %}
+{% endblock %}

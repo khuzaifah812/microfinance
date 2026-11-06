@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Close till{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Count and close till #{{ till.pk }}</h1><p>Count the physical cash by denomination. A difference must be explained and is recorded.</p></div></div>
+<form method="post" data-once data-confirm="Close this till with UGX {#till-actual} counted? The difference is {#till-diff}. A closed till cannot be reopened." data-confirm-title="Close till?" data-confirm-type="warning" data-confirm-ok="Close till">{% csrf_token %}
+<div class="grid two"><div class="card"><h2>Denominations</h2><table class="tbl"><thead><tr><th>Note / coin</th><th>Count</th><th class="num">Value</th></tr></thead><tbody>
+{% for d in denoms %}<tr><td>UGX {{ d|stringformat:"d" }}</td><td><input class="inp" style="max-width:110px" type="number" min="0" step="1" name="d{{ d }}" data-denom="{{ d }}" value="{{ post|default_if_none:''|length|yesno:',' }}"></td><td class="num" id="sub-{{ d }}">0</td></tr>{% endfor %}</tbody></table></div>
+<div class="card"><h2>Result</h2><div class="dl"><div><span>Expected cash</span><b id="till-expected" data-v="{{ till.expected|stringformat:'.0f' }}">{{ till.expected|ugx }}</b></div><div><span>Counted</span><b id="till-actual">0</b></div><div><span>Difference</span><b><span id="till-diff" class="badge ok">0</span></b></div><div><span id="diff-label">Balanced</span></div></div>
+<div class="field" id="reason-box" style="display:none;margin-top:12px"><label for="reason">Reason for difference</label><input class="inp" id="reason" name="reason" maxlength="250" value="{{ post.reason }}" placeholder="Explain the shortage or overage"></div>
+<div class="formactions"><button class="btn" type="submit">Close till</button><a class="btn ghost" href="{% url 'cashier:home' %}">Cancel</a></div></div></div></form>{% endblock %}

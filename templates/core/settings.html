@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}System settings{% endblock %}
+{% block content %}<div class="pagehead"><div><h1>System configuration</h1><p>Change the system name and logo, and tune policy values. Every change is audited.</p></div></div>
+<div class="card" style="max-width:900px"><h2>Branding</h2>
+<form method="post" enctype="multipart/form-data" data-once>{% csrf_token %}<input type="hidden" name="form" value="branding">{% render_form form %}<div class="formactions"><button class="btn" type="submit">Save branding</button></div></form></div>
+<div class="card" style="max-width:900px"><h2>Policy settings</h2>
+<form method="post" data-once>{% csrf_token %}<input type="hidden" name="form" value="settings"><div class="fgrid">{% for k, v, help in rows %}<div class="field"><label for="s_{{ k }}">{{ k }}</label><input class="inp" id="s_{{ k }}" name="{{ k }}" value="{{ v }}"><div class="help">{{ help }}</div></div>{% endfor %}</div>
+<div class="formactions"><button class="btn" type="submit">Save settings</button></div></form></div>{% endblock %}

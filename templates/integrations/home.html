@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}Integrations{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Mobile money and SMS</h1><p>Provider connections are configured here. No payment is ever shown as received until a provider's signed confirmation arrives, and SMS stays queued until a gateway is connected.</p></div></div>
+<div class="note">Webhook address (give to the provider): <code>{{ webhook_base }}&lt;provider&gt;/</code>. Credentials are read from environment variables only and are never stored in the database.</div>
+<div class="grid two">{% for c in cards %}<div class="card"><h2>{{ c.label }} <span class="badge {% if c.ready %}ok{% else %}warn{% endif %}">{% if c.ready %}Ready{% else %}Not connected{% endif %}</span></h2>
+<p class="small mute">Environment variables:</p><ul class="small">{% for k, ok in c.envs %}<li><code>{{ k }}</code> - {% if ok %}set{% else %}missing{% endif %}</li>{% endfor %}</ul>
+{% if manage %}<form method="post">{% csrf_token %}<input type="hidden" name="provider" value="{{ c.cfg.provider }}">{% render_form c.form %}<div class="formactions"><button class="btn" type="submit">Save</button></div></form>{% endif %}</div>{% endfor %}</div>
+<h2>Recent mobile money confirmations</h2>{% include "_table.html" with js=True %}
+<h2>SMS outbox <span class="badge warn">{{ queued }} queued</span></h2>
+<div class="tablewrap"><table class="tbl"><thead><tr><th>Created</th><th>Phone</th><th>Message</th><th>Status</th></tr></thead><tbody>{% for m in outbox %}<tr><td>{{ m.created_at|date:"d M H:i" }}</td><td>{{ m.phone|mask_phone }}</td><td>{{ m.message }}</td><td>{{ m.get_status_display }}</td></tr>{% empty %}<tr><td colspan="4" class="empty">Nothing queued.</td></tr>{% endfor %}</tbody></table></div>
+{% if manage and queued %}<form method="post" action="{% url 'integrations:sms_dispatch' %}" class="np" style="margin-top:12px">{% csrf_token %}<button class="btn ghost" type="submit">Try to dispatch queued SMS</button></form>{% endif %}{% endblock %}

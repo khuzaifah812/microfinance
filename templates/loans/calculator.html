@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Loan calculator{% endblock %}
+{% block content %}<div class="pagehead"><div><h1>Loan calculator</h1><p>Uses the same engine as real schedules. Nothing is saved.</p></div></div>
+<div class="card"><form onsubmit="return false"><div class="fgrid">
+<div class="field"><label>Product</label><select class="inp" name="product"><option value="">Select</option>{% for p in products %}<option value="{{ p.pk }}">{{ p.name }}{% if not p.rate_set %} (rate not set){% endif %}</option>{% endfor %}</select></div>
+<div class="field"><label>Amount (UGX)</label><input class="inp" name="amount" type="number" min="1000" step="1000" value="1000000"></div>
+<div class="field"><label>Instalments</label><input class="inp" name="term" type="number" min="1" max="120" value="12"></div></div><span data-loan-preview hidden></span></form></div>
+<div id="preview-out"></div>{% endblock %}

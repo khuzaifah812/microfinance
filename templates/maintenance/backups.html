@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Backups{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Backups</h1><p>Encrypted JSON export of all application data. {% if age is not None %}Last backup {{ age|floatformat:0 }} hours ago.{% else %}No backup has been taken yet.{% endif %}</p></div>
+<div class="actions np"><form method="post" action="{% url 'maintenance:backup_create' %}">{% csrf_token %}<button class="btn" type="submit">Create backup now</button></form></div></div>
+{% if not key_set %}<div class="note bad">BACKUP_ENCRYPTION_KEY is not set, so backups are not encrypted. Set it before storing real member data.</div>{% endif %}
+{% if prod %}<div class="note">The server disk on Render is temporary. Download each backup and keep it somewhere safe off the server.</div>{% endif %}
+{% include "_table.html" with js=True %}{% endblock %}

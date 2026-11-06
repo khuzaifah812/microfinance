@@ -1,0 +1,58 @@
+{% load static %}<!doctype html>
+<html lang="en" {% if theme %}data-theme="{{ theme }}"{% endif %}>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}{{ site.short_name }}{% endblock %} | {{ site.short_name }}</title>
+<meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="{% static 'img/logo-mark.png' %}">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% block head %}{% endblock %}
+</head>
+<body data-idle="{{ idle_seconds }}" data-warn="{{ idle_warn }}">
+<a class="skip" href="#main">Skip to content</a>
+<div class="app">
+  <aside class="side" aria-label="Main navigation">
+    <div class="brand">
+      {% if site.logo %}<img src="{% url 'core:logo' %}?v={{ site.updated_at|date:'U' }}" alt="">{% else %}<img class="wide" src="{% static 'img/logo-mark.png' %}" alt="">{% endif %}
+      <div><b>{{ site.name }}</b></div>
+    </div>
+    <nav>
+      {% for g in nav %}<h4>{{ g.label }}</h4>
+        {% for m in g.items %}<a href="{% if m.url_name %}{% url m.url_name %}{% else %}{% url 'maintenance:module_page' m.key %}{% endif %}">{% icon m.icon %}<span>{{ m.name }}</span></a>{% endfor %}
+      {% endfor %}
+    </nav>
+    <div class="me">
+      <b>{{ request.user.get_full_name|default:request.user.username }}</b><small>{{ role_label }}</small>
+      <form method="post" action="{% url 'accounts:logout' %}" id="logout-form" data-confirm="You will be signed out of {{ site.short_name }}. Anything you have not saved will be lost." data-confirm-title="Sign out?" data-confirm-ok="Sign out">{% csrf_token %}<button type="submit">{% icon 'logout' %} Sign out</button></form>
+    </div>
+  </aside>
+  <div class="scrim"></div>
+  <div class="main">
+    <header class="top">
+      <button class="iconbtn" id="menu-btn" aria-label="Open menu">{% icon 'menu' %}</button>
+      <a class="toplogo" href="/" aria-label="{{ site.name }} home"><img src="{% static 'img/logo-mark.png' %}" alt=""><span>{{ site.name }}</span></a>
+      <form class="search" action="{% url 'core:search' %}" role="search">{% icon 'search' %}<input class="inp" type="search" name="q" placeholder="Search members, accounts, loans" aria-label="Search" autocomplete="off"></form>
+      <div class="clock"><div>{{ now|date:"D, d M Y" }}</div><div data-clock>{{ now|date:"H:i:s" }} EAT</div></div>
+      <button class="iconbtn" data-theme-toggle aria-label="Toggle light or dark theme" title="Light / dark">{% icon 'dark_mode' %}</button>
+      <a class="iconbtn" href="{% url 'notifications:list' %}" aria-label="Notifications" title="Notifications">{% icon 'notifications' %}{% if unread %}<span class="dot">{{ unread }}</span>{% endif %}</a>
+      <a class="iconbtn" href="{% url 'accounts:password_change' %}" aria-label="Account" title="Change password">{% icon 'account_circle' %}</a>
+    </header>
+    {% for n in notices %}<div class="banner warn">{% icon 'engineering' %}<span><b>Planned maintenance - {{ n.title }}:</b> {{ n.message|truncatechars:200 }} ({{ n.starts_at|date:"d M H:i" }} - {{ n.ends_at|date:"d M H:i" }})</span></div>{% endfor %}
+    {% if backup_due %}<div class="banner warn">{% icon 'backup' %}<span>No verified backup in the last 24 hours. <a href="{% url 'maintenance:backups' %}">Create one now</a>.</span></div>{% endif %}
+    <div class="printhead"><img src="{% static 'img/logo-mark.png' %}" alt=""><div><b>{{ site.name }}</b><small>{{ site.address }} {{ site.phone }}</small></div></div>
+    <main class="content" id="main">{% block content %}{% endblock %}</main>
+    <div class="footer"><img src="{% static 'img/logo-mark.png' %}" alt="" class="footlogo">{{ site.name }}{% if site.registration_no %} &middot; Reg. {{ site.registration_no }}{% endif %} &middot; All amounts in Uganda Shillings (UGX)</div>
+  </div>
+</div>
+<div id="toasts" aria-live="polite">{% for m in messages %}<div class="toast {{ m.tags }}" role="status"><span>{{ m }}</span><button type="button" aria-label="Dismiss">&times;</button></div>{% endfor %}</div>
+<div class="modal" id="idle-modal" role="alertdialog" aria-modal="true" aria-labelledby="idle-t"><div class="box">
+  <span class="material-symbols-outlined" style="font-size:40px;color:rgb(var(--ac))">lock_clock</span>
+  <h2 id="idle-t">Still there?</h2><p class="mute">For security you will be signed out after 10 minutes of inactivity.</p>
+  <div class="count" id="idle-count">60s</div>
+  <div class="actions" style="justify-content:center"><button class="btn" id="idle-stay" type="button">Stay signed in</button><button class="btn ghost" id="idle-out" type="button">Sign out</button></div>
+</div></div>
+<script src="{% static 'js/app.js' %}" defer></script>
+{% block scripts %}{% endblock %}
+</body></html>

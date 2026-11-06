@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}{{ d.title }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ d.title }}</h1></div><div class="actions np"><a class="btn ghost" href="{% url 'maintenance:doc_edit' d.pk %}">Edit</a><a class="btn ghost" href="{% url 'maintenance:docs' %}">Back</a></div></div>
+<div class="card" style="white-space:pre-wrap">{{ d.body }}</div>{% endblock %}

@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Reports</h1><p>Every report is computed live from the ledger and can be exported as PDF, Excel or CSV.</p></div>{% if "reports.umra_config" in perms %}<div class="actions np"><a class="btn ghost" href="{% url 'reports:umra_config' %}">Configure UMRA summary</a></div>{% endif %}</div>
+{% for cat, items in cats %}<h2>{{ cat }}</h2><div class="grid">{% for r in items %}<a class="kpi linkcard" href="{% url 'reports:show' r.key %}"><b style="font-size:1rem">{{ r.title }}</b><span class="sub">{{ cat }}</span></a>{% endfor %}</div>{% endfor %}{% endblock %}

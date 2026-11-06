@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}USSD preview{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>USSD preview</h1><p>Shows what a member would see on a feature phone. This is a preview only; no telecom gateway is connected.</p></div></div>
+<div class="grid two"><div class="card"><form method="get" data-autosubmit><div class="field"><label>Member</label><select class="inp" name="member">{% if not member %}<option value="">Select member</option>{% endif %}{% for m in members %}<option value="{{ m.pk }}" {% if member and m.pk == member.pk %}selected{% endif %}>{{ m.member_no }} {{ m.full_name }}</option>{% endfor %}</select></div></form></div>
+<div class="card" style="max-width:320px;background:#111;color:#cfe;font-family:monospace">{% if member %}<pre style="white-space:pre-wrap;margin:0">{{ screen }}</pre>
+{% if cont %}<form method="post" style="margin-top:12px">{% csrf_token %}<input type="hidden" name="member" value="{{ member.pk }}"><input type="hidden" name="text" value="{{ text }}"><input class="inp" name="entry" autocomplete="off" autofocus><button class="btn sm" type="submit" style="margin-top:8px">Send</button></form>{% endif %}
+<form method="post" style="margin-top:8px">{% csrf_token %}<input type="hidden" name="member" value="{{ member.pk }}"><button class="btn ghost sm" name="reset" value="1" type="submit">Restart</button></form>{% else %}<span>Select a member.</span>{% endif %}</div></div>{% endblock %}

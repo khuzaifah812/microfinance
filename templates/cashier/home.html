@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}Till{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Cashier till</h1><p>Open a till with a cash float, take deposits and repayments, then count and close it.</p></div>
+<div class="actions np">{% if can_all %}<a class="btn ghost" href="{% url 'cashier:tills' %}">All tills</a>{% endif %}<a class="btn ghost" href="{% url 'cashier:report' %}">Daily cash report</a></div></div>
+{% if till %}
+<div class="grid"><div class="kpi"><span class="k">Till #{{ till.pk }} is open</span><b>{{ till.expected|ugx }}</b><span class="sub">expected cash &middot; float {{ till.opening_float|ugx }}</span></div>
+<div class="kpi"><span class="k">Cash in today</span><b>{{ till.cash_in|ugx }}</b></div><div class="kpi"><span class="k">Cash out today</span><b>{{ till.cash_out|ugx }}</b></div></div>
+{% if can_till %}<div class="actions np" style="margin-bottom:16px"><a class="btn" href="{% url 'cashier:close' %}">Count and close till</a><a class="btn ghost" href="{% url 'cashier:transfer' %}">Transfer cash to another till</a><a class="btn ghost" href="{% url 'cashier:till' till.pk %}">View entries</a></div>{% endif %}
+{% elif can_till %}
+<div class="card" style="max-width:480px"><h2>Open today's till</h2><form method="post" action="{% url 'cashier:open' %}" data-once>{% csrf_token %}{% render_form form %}<div class="formactions"><button class="btn" type="submit">Open till</button></div></form></div>
+{% endif %}
+<h2>My recent tills</h2>{% include "_table.html" with js=True %}{% endblock %}

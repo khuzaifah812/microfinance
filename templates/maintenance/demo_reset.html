@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Demo reset{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Demonstration data reset</h1></div></div>
+{% if blocked %}<div class="note bad">Disabled: this system is in production mode, so demonstration data can never be wiped from here.</div>
+{% else %}<div class="note bad">This deletes ALL data and re-creates the demonstration accounts. Only use it on a demo installation.</div>
+<form method="post" class="card" style="max-width:520px">{% csrf_token %}{% render_form form %}<div class="formactions"><button class="btn" type="submit">Reset demo data</button></div></form>{% endif %}{% endblock %}

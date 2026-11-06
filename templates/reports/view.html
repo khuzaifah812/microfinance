@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}{{ r.title }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ r.title }}</h1><p>{{ sub }}</p></div>
+<div class="actions np"><button class="btn ghost" data-print type="button">{% icon 'print' %} Print</button>
+{% if can_export %}<a class="btn ghost" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=pdf">PDF</a><a class="btn ghost" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=xlsx">Excel</a><a class="btn ghost" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}export=csv">CSV</a>{% endif %}</div></div>
+{% if has_from or has_asof %}<form class="toolbar np" method="get">{% if has_from %}<div class="field"><label>From</label><input class="inp" type="date" name="from" value="{{ p.from|date:'Y-m-d' }}"></div><div class="field"><label>To</label><input class="inp" type="date" name="to" value="{{ p.to|date:'Y-m-d' }}"></div>{% endif %}{% if has_asof %}<div class="field"><label>As at</label><input class="inp" type="date" name="as_of" value="{{ p.as_of|date:'Y-m-d' }}"></div>{% endif %}<button class="btn ghost" type="submit">Run</button></form>{% endif %}
+{% if notes %}<div class="note">{{ notes }}</div>{% endif %}
+<div class="tablewrap"><table class="tbl js-table"><thead><tr>{% for c in cols %}<th {% if c.num %}class="num"{% endif %}>{{ c.name }}</th>{% endfor %}</tr></thead><tbody>
+{% for row in rows %}<tr>{% for v in row %}<td>{{ v }}</td>{% endfor %}</tr>{% empty %}<tr><td class="empty" colspan="{{ cols|length }}">No data for this selection.</td></tr>{% endfor %}</tbody>
+{% if tot %}<tfoot><tr class="sum">{% for v in tot %}<td>{{ v }}</td>{% endfor %}</tr></tfoot>{% endif %}</table></div>{% endblock %}

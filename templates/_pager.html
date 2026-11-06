@@ -1,0 +1,7 @@
+{% if page and page.paginator.num_pages > 1 %}
+<div class="pager np"><span>Page {{ page.number }} of {{ page.paginator.num_pages }} &middot; {{ page.paginator.count }} records</span>
+<span class="pg">
+  {% if page.has_previous %}<a href="?{% if qs %}{{ qs }}&{% endif %}page={{ page.previous_page_number }}">Previous</a>{% else %}<a class="off">Previous</a>{% endif %}
+  <span class="cur">{{ page.number }}</span>
+  {% if page.has_next %}<a href="?{% if qs %}{{ qs }}&{% endif %}page={{ page.next_page_number }}">Next</a>{% else %}<a class="off">Next</a>{% endif %}
+</span></div>{% elif page %}<div class="pager np"><span>{{ page.paginator.count }} record{{ page.paginator.count|pluralize }}</span></div>{% endif %}

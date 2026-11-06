@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}{{ p.user.username }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ p.user.get_full_name|default:p.user.username }}</h1><p>{{ p.user.username }} &middot; {{ p.role_label }}</p></div>
+<div class="actions"><a class="btn ghost" href="{% url 'accounts:users' %}">All staff</a><a class="btn" href="{% url 'accounts:user_edit' p.pk %}">Edit</a></div></div>
+{% if temp %}<div class="note warn"><b>Temporary password for {{ temp.u }}:</b> <code class="secret">{{ temp.p }}</code><br>Shown once. The employee must change it at first sign-in. Share it securely and never by email or SMS.</div>{% endif %}
+<div class="grid two">
+<div class="card"><h2>Account</h2><div class="dl">
+<div><span>Status</span><b>{% if p.is_locked %}<span class="badge bad">Locked</span>{% elif p.user.is_active %}<span class="badge ok">Active</span>{% else %}<span class="badge bad">Disabled</span>{% endif %}</b></div>
+<div><span>Email</span><b>{{ p.user.email|default:"-" }}</b></div><div><span>Phone</span><b>{{ p.phone|mask_phone|default:"-" }}</b></div>
+<div><span>Failed attempts</span><b>{{ p.failed_attempts }}</b></div><div><span>Two-factor</span><b>{% if has2fa %}<span class="badge ok">Enrolled</span>{% elif p.needs_2fa %}<span class="badge warn">Required - not enrolled</span>{% else %}Optional{% endif %}</b></div>
+<div><span>Password</span><b>{% if p.must_change_password %}<span class="badge warn">Temporary</span>{% else %}Set by user{% endif %}</b></div></div>
+<div class="formactions">
+<form method="post" action="{% url 'accounts:user_action' p.pk 'reset_password' %}" class="inline" data-confirm="Issue a new temporary password? The current one stops working.">{% csrf_token %}<button class="btn sm" type="submit">Reset password</button></form>
+{% if p.is_locked or p.failed_attempts %}<form method="post" action="{% url 'accounts:user_action' p.pk 'unlock' %}" class="inline">{% csrf_token %}<button class="btn ghost sm" type="submit">Unlock</button></form>{% endif %}
+{% if has2fa %}<form method="post" action="{% url 'accounts:user_action' p.pk 'reset_2fa' %}" class="inline" data-confirm="Remove this user's authenticator?" data-confirm-type="danger" data-confirm-title="Are you sure?">{% csrf_token %}<button class="btn ghost sm" type="submit">Reset 2FA</button></form>{% endif %}
+</div></div>
+<div class="card"><h2>Recent sign-ins</h2><div class="tablewrap"><table class="tbl"><thead><tr><th>When</th><th>Result</th><th>IP</th></tr></thead><tbody>
+{% for h in logins %}<tr><td>{{ h.ts|date:"d M H:i" }}</td><td><span class="badge {% if h.success %}ok{% else %}bad{% endif %}">{% if h.success %}OK{% else %}{{ h.reason|default:"Failed" }}{% endif %}</span></td><td>{{ h.ip|default:"" }}</td></tr>{% empty %}<tr><td colspan="3" class="empty">No sign-ins yet.</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+{% endblock %}

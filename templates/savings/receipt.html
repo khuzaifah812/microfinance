@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Receipt {{ tx.ref }}{% endblock %}
+{% block content %}
+<div class="pagehead np"><div><h1>Transaction receipt</h1></div><div class="actions"><button class="btn" data-print type="button">{% icon 'print' %} Print receipt</button><a class="btn ghost" href="{% url 'savings:detail' tx.account_id %}">Back to account</a></div></div>
+<div class="paper" style="max-width:520px"><div class="letterhead">{% if site.has_logo %}<img src="{% url 'core:logo' %}" alt="">{% endif %}<h2>{{ site.name }}</h2><div class="small mute">{{ site.address }} {{ site.phone }}</div><h3>RECEIPT</h3></div>
+<div class="dl" style="grid-template-columns:1fr 1fr"><div><span>Reference</span><b>{{ tx.ref }}</b></div><div><span>Date</span><b>{{ tx.date|date:"d M Y" }}</b></div><div><span>Member</span><b>{{ tx.account.member.full_name }}</b></div><div><span>Account</span><b>{{ tx.account.account_no }}</b></div>
+<div><span>Transaction</span><b>{{ tx.get_kind_display }}</b></div><div><span>Channel</span><b>{{ tx.get_channel_display }}</b></div><div><span>Amount</span><b class="bigamt">{{ tx.amount|ugx }}</b></div><div><span>Balance after</span><b>{{ tx.balance_after|ugx }}</b></div></div>
+<div class="sig"><div>Served by: {{ tx.created_by.get_full_name|default:tx.created_by.username }}</div><div>Member signature</div></div></div>{% endblock %}

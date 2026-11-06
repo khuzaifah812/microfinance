@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}General ledger{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>General ledger</h1><p>{% if acc %}{{ acc.code }} {{ acc.name }}{% endif %}</p></div><div class="actions np"><button class="btn ghost" data-print type="button">{% icon 'print' %} Print</button></div></div>
+<form class="toolbar np" method="get" data-autosubmit><div class="field grow"><label>Account</label><select class="inp" name="account">{% for a in accounts %}<option value="{{ a.pk }}" {% if acc and a.pk == acc.pk %}selected{% endif %}>{{ a.code }} {{ a.name }}</option>{% endfor %}</select></div><div class="field"><label>From</label><input class="inp" type="date" name="from" value="{{ f }}"></div><div class="field"><label>To</label><input class="inp" type="date" name="to" value="{{ t }}"></div><button class="btn ghost" type="submit">Show</button></form>
+<div class="tablewrap"><table class="tbl js-table"><thead><tr><th>Date</th><th>Journal</th><th>Description</th><th class="num">Debit</th><th class="num">Credit</th><th class="num">Balance</th></tr></thead><tbody>
+<tr><td colspan="5"><b>Opening balance</b></td><td class="num">{{ opening|num }}</td></tr>
+{% for l, run in rows %}<tr><td>{{ l.journal.date|date:"d M Y" }}</td><td><a href="{% url 'accounting:journal' l.journal_id %}">{{ l.journal.ref }}</a></td><td>{{ l.journal.description }}</td><td class="num">{% if l.debit %}{{ l.debit|num }}{% endif %}</td><td class="num">{% if l.credit %}{{ l.credit|num }}{% endif %}</td><td class="num">{{ run|num }}</td></tr>{% endfor %}</tbody>
+<tfoot><tr class="sum"><td colspan="5">Closing balance</td><td class="num">{{ closing|num }}</td></tr></tfoot></table></div>{% endblock %}

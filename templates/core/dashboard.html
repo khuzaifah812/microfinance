@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Dashboard</h1><p>Live from the ledger and sub-ledgers - nothing here is typed in. Arrows compare with the end of last month.</p></div>
+<div class="actions np"><button class="btn ghost" data-print type="button">{% icon 'print' %} Print</button></div></div>
+{% if todo %}<div class="todo np">{% for ic, text, url in todo %}<a href="{{ url }}">{% icon ic %}<span>{{ text }}</span></a>{% endfor %}</div>{% endif %}
+<div class="grid">
+{% for c in cards %}<div class="kpi"><span class="k">{% if c.icon %}{% icon c.icon %}{% endif %}{{ c.label }}</span>
+<b>{% if c.fmt == "ugx" %}{{ c.value|ugx }}{% elif c.fmt == "pct" %}{{ c.value|pct }}{% else %}{{ c.value|num }}{% endif %}</b>
+{% if c.trend %}<span class="tr {{ c.tone }}">{% if c.trend == "up" %}&#9650;{% elif c.trend == "down" %}&#9660;{% else %}&#9644;{% endif %} {% if c.pct is not None %}{{ c.pct|floatformat:1 }}%{% else %}new{% endif %}</span>{% endif %}
+{% if c.sub %}<span class="sub">{{ c.sub }}</span>{% endif %}</div>{% endfor %}
+</div>
+<div class="grid two">
+<div class="card"><h2>Monthly savings deposits (UGX)</h2>{{ charts.savings }}</div>
+<div class="card"><h2>Loan disbursements (UGX)</h2>{{ charts.disb }}</div>
+<div class="card"><h2>Loan repayment performance</h2>{{ charts.repay }}</div>
+<div class="card"><h2>Income vs expenditure (UGX)</h2>{{ charts.ie }}</div>
+<div class="card"><h2>Member registrations</h2>{{ charts.reg }}</div>
+<div class="card"><h2>Arrears analysis - principal at risk by days overdue</h2>{{ charts.arrears }}</div>
+</div>
+{% endblock %}

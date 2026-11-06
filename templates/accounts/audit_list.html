@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Audit trail{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>Audit trail</h1><p>Append-only, HMAC hash-chained. Any edit, deletion or truncation is detected by the integrity check.</p></div>
+<div class="actions"><form method="post" action="{% url 'accounts:audit_verify' %}" class="inline">{% csrf_token %}<button class="btn" type="submit">{% icon 'verified' %} Verify integrity</button></form><a class="btn ghost" href="{% url 'accounts:logins' %}">Login history</a></div></div>
+<form class="toolbar np" method="get" data-autosubmit><div class="field grow"><label>Search</label><input class="inp" type="search" name="q" value="{{ q }}" placeholder="{{ search }}"></div>
+<div class="field"><label>Category</label><select class="inp" name="cat"><option value="">All</option>{% for c in cats %}<option value="{{ c }}" {% if c == cat %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div><button class="btn ghost" type="submit">Apply</button></form>
+{% include "_table.html" %}{% include "_pager.html" %}
+{% endblock %}

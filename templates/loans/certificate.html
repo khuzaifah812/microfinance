@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Clearance certificate{% endblock %}
+{% block content %}
+<div class="pagehead np"><div><h1>Loan clearance certificate</h1></div><div class="actions"><button class="btn" data-print type="button">{% icon 'print' %} Print</button><a class="btn ghost" href="{% url 'loans:detail' loan.pk %}">Back</a></div></div>
+<div class="paper" style="text-align:center"><div class="letterhead">{% if site.has_logo %}<img src="{% url 'core:logo' %}" alt="">{% endif %}<h2>{{ site.name }}</h2><div class="small mute">{{ site.address }} {{ site.phone }}</div></div>
+<h1 style="font-family:Merriweather;margin:20px 0">CERTIFICATE OF LOAN CLEARANCE</h1>
+<p style="font-size:1.05rem;line-height:1.9">This is to certify that <b>{{ loan.member.full_name }}</b> (Member No. <b>{{ loan.member.member_no }}</b>) has fully repaid loan <b>{{ loan.loan_no }}</b> ({{ loan.product.name }}) of <b>{{ loan.principal|ugx }}</b> disbursed on {{ loan.disbursed_on|date:"d F Y" }}, and cleared on <b>{{ loan.cleared_on|date:"d F Y" }}</b>.</p>
+<p>The SACCO holds no further claim against the member in respect of this loan. Any guarantor pledges have been released.</p>
+<div class="sig"><div>Loan Officer</div><div>General Manager</div></div><p class="small mute" style="margin-top:20px">Issued {{ now|date:"d M Y" }} &middot; Reference {{ loan.loan_no }}</p></div>{% endblock %}

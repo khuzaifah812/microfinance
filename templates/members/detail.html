@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block title %}{{ m.full_name }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ m.full_name }}</h1><p>{{ m.member_no }} &middot; joined {{ m.joined_on|date:"d M Y" }} &middot; <span class="badge {{ m.get_status_display|badge }}">{{ m.get_status_display }}</span></p></div>
+<div class="actions np">
+{% if "members.manage" in perms %}<a class="btn ghost" href="{% url 'members:edit' m.pk %}">Edit</a>{% endif %}
+{% if "savings.open" in perms %}<a class="btn ghost" href="{% url 'savings:open' %}?member={{ m.pk }}">Open account</a>{% endif %}
+{% if "loans.apply" in perms %}<a class="btn" href="{% url 'loans:apply' %}?member={{ m.pk }}">New loan</a>{% endif %}
+<a class="btn ghost" href="{% url 'members:statement' m.pk %}">Statement</a></div></div>
+<div class="grid two">
+<div class="card"><div class="profilehead">{% if m.photo %}<img class="avatar" src="{% url 'members:photo' m.pk %}" alt="Photo of {{ m.full_name }}">{% else %}<div class="avatar">{{ m.full_name|slice:":1" }}</div>{% endif %}
+<div><div class="k">Phone</div><b class="ui">{{ m.phone|mask_phone }}</b><div class="k" style="margin-top:6px">National ID</div><b class="ui">{{ m.nin|mask_nin|default:"-" }}</b></div></div>
+<div class="dl"><div><span>Gender</span><b>{{ m.get_gender_display }}</b></div><div><span>Date of birth</span><b>{{ m.date_of_birth|date:"d M Y"|default:"-" }}</b></div><div><span>Address</span><b>{{ m.address|default:"-" }}</b></div><div><span>Occupation</span><b>{{ m.occupation|default:"-" }}</b></div>
+<div><span>Next of kin</span><b>{{ m.next_of_kin_name }} ({{ m.next_of_kin_relation|default:"-" }})</b></div><div><span>Next of kin phone</span><b>{{ m.next_of_kin_phone|mask_phone }}</b></div>
+<div><span>Data consent</span><b>{% if m.consent_given %}<span class="badge ok">Given {{ m.consent_at|date:"d M Y" }}</span>{% else %}<span class="badge bad">Not recorded</span>{% endif %}</b></div></div>
+<div class="actions np" style="margin-top:14px">
+{% if "members.export" in perms %}<a class="btn ghost sm" href="{% url 'members:export' m.pk %}">{% icon 'download' %} Export personal data</a>{% endif %}
+{% if "members.manage" in perms %}<form class="inline" method="post" action="{% url 'members:status' m.pk %}">{% csrf_token %}<select class="inp" name="status" style="width:auto;display:inline-block">{% for v, l in m.STATUS %}<option value="{{ v }}" {% if v == m.status %}selected{% endif %}>{{ l }}</option>{% endfor %}</select> <button class="btn ghost sm" type="submit" data-confirm="Change this member's status?">Update status</button></form>{% endif %}</div></div>
+<div class="card"><h2>Accounts</h2><div class="tablewrap"><table class="tbl"><thead><tr><th>Account</th><th>Type</th><th class="num">Balance</th><th class="num">Pledged</th><th>Status</th></tr></thead><tbody>
+{% for a in accounts %}<tr><td><a href="{% url 'savings:detail' a.pk %}">{{ a.account_no }}</a></td><td>{{ a.get_kind_display }}</td><td class="num">{{ a.balance|num }}</td><td class="num">{{ a.pledged|num }}</td><td><span class="badge {{ a.get_status_display|badge }}">{{ a.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="5" class="empty">No accounts yet.</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+<div class="grid two">
+<div class="card"><h2>Loans</h2><div class="tablewrap"><table class="tbl"><thead><tr><th>Loan</th><th class="num">Principal</th><th>Status</th></tr></thead><tbody>
+{% for l in loans %}<tr><td><a href="{% url 'loans:detail' l.pk %}">{{ l.loan_no }}</a></td><td class="num">{{ l.principal|num }}</td><td><span class="badge {{ l.get_status_display|badge }}">{{ l.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="3" class="empty">No loans.</td></tr>{% endfor %}</tbody></table></div>
+{% if guarantees %}<h3 style="margin-top:14px">Guaranteeing</h3>{% for g in guarantees %}<p class="small"><a href="{% url 'loans:detail' g.loan_id %}">{{ g.loan.loan_no }}</a> - pledge UGX {{ g.amount|num }}</p>{% endfor %}{% endif %}</div>
+<div class="card"><h2>Documents</h2>{% for d in docs %}<p class="ui small"><a href="{% url 'members:doc_download' d.pk %}" target="_blank" rel="noopener">{% icon 'description' %} {{ d.get_kind_display }}</a> <span class="mute">{{ d.uploaded_at|date:"d M Y" }} {{ d.note }}</span></p>{% empty %}<p class="mute">No documents uploaded.</p>{% endfor %}
+{% if "members.manage" in perms %}<a class="btn ghost sm" href="{% url 'members:doc_upload' m.pk %}">Upload document</a>{% endif %}</div>
+</div>
+{% endblock %}

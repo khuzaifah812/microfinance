@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}System health{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>System health</h1><p>Python {{ info.python }} &middot; Django {{ info.django }} &middot; database {{ info.db }}</p></div></div>
+<div class="tablewrap"><table class="tbl"><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody>{% for c in checks %}<tr><td>{{ c.name }}</td><td><span class="badge {{ c.status }}">{{ c.status|upper }}</span></td><td>{{ c.detail }}</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="pagehead"><div><h1>{{ title }}</h1></div></div>
+<div class="card" style="max-width:860px">
+  {% if intro %}<div class="note">{{ intro }}</div>{% endif %}
+  <form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} data-once novalidate{% if confirm %} data-confirm="{{ confirm }}" data-confirm-title="{{ confirm_title|default:'Please confirm' }}" data-confirm-type="{{ confirm_type|default:'confirm' }}" data-confirm-ok="{{ confirm_ok|default:'Yes, post it' }}"{% endif %}>
+    {% csrf_token %}{% render_form form %}
+    <div class="formactions"><button class="btn" type="submit">{{ submit|default:"Save" }}</button>{% if cancel %}<a class="btn ghost" href="{{ cancel }}">Cancel</a>{% endif %}</div>
+  </form>
+</div>
+{% if table %}<h2>{{ table_title }}</h2>{% include "_table.html" with js=True %}{% endif %}
+{% endblock %}
